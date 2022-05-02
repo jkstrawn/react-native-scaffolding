@@ -2,6 +2,8 @@ import { createMaterialTopTabNavigator } from '@react-navigation/material-top-ta
 import type { ParamListBase } from '@react-navigation/native';
 import type { StackScreenProps } from '@react-navigation/stack';
 import * as React from 'react';
+import Colors from '../../constants/Colors';
+// import { Colors } from 'react-native/Libraries/NewAppScreen';
 import NotificationsScreen from './NotificationsScreen';
 import ShiftAlertsScreen from './ShiftAlertsScreen';
 import ShiftOffersScreen from './ShiftOffersScreen';
@@ -25,12 +27,17 @@ export default function MessagesScreen({
 
   return (
     <MaterialTopTabs.Navigator screenOptions={{
-      tabBarPressColor: 'powderblue', tabBarActiveTintColor: 'white'
+      tabBarPressColor: 'powderblue', tabBarActiveTintColor: 'white',
+      // tabBarInactiveTintColor: "black"
+      tabBarStyle: {
+        backgroundColor: '#222'
+      },
+      tabBarIndicatorStyle: { backgroundColor: "white" }
     }}>
       <MaterialTopTabs.Screen
         name="Chat"
         component={ShiftOffersScreen}
-        options={{ title: 'Shift Offers' }}
+        options={{ title: 'Offers' }}
       />
       <MaterialTopTabs.Screen
         name="Contacts"
@@ -40,7 +47,7 @@ export default function MessagesScreen({
       <MaterialTopTabs.Screen
         name="Albums"
         component={ShiftAlertsScreen}
-        options={{ title: 'Shift Alerts' }}
+        options={{ title: 'Alerts' }}
       />
     </MaterialTopTabs.Navigator>
   );

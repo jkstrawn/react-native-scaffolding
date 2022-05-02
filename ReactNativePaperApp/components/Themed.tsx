@@ -3,7 +3,8 @@
  * https://docs.expo.io/guides/color-schemes/
  */
 
-import { Text as DefaultText, View as DefaultView } from 'react-native';
+import { GestureResponderEvent, Text as DefaultText, TextStyle, View as DefaultView } from 'react-native';
+import { Button as PaperButton, TextInput as PaperInput } from 'react-native-paper';
 
 import Colors from '../constants/Colors';
 import useColorScheme from '../hooks/useColorScheme';
@@ -29,6 +30,8 @@ type ThemeProps = {
 
 export type TextProps = ThemeProps & DefaultText['props'];
 export type ViewProps = ThemeProps & DefaultView['props'];
+export type ButtonProps = ThemeProps & { title: string, onPress: (() => void) };
+export type InputProps = ThemeProps & { label: string, style?: TextStyle };
 
 export function Text(props: TextProps) {
   const { style, lightColor, darkColor, ...otherProps } = props;
@@ -42,4 +45,32 @@ export function View(props: ViewProps) {
   const backgroundColor = useThemeColor({ light: lightColor, dark: darkColor }, 'background');
 
   return <DefaultView style={[{ backgroundColor }, style]} {...otherProps} />;
+}
+
+
+export function Button(props: ButtonProps) {
+  return <PaperButton
+    style={{
+      backgroundColor: Colors.rosemarkPurple,
+      borderRadius: 3,
+    }}
+    // containerStyle={{
+    //   width: 200,
+    //   marginHorizontal: 50,
+    //   marginVertical: 10,
+    // }}
+    onPress={props.onPress}
+  >
+    {props.title}
+  </PaperButton>
+}
+
+export function TextInput(props: InputProps) {
+  return <PaperInput
+    // leftIcon={props.icon}
+    label={props.label}
+    selectionColor={Colors.rosemarkPurple}
+    style={{ color: 'white', ...props.style }}
+    autoComplete={false}
+  />
 }

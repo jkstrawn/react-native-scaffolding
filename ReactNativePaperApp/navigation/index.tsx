@@ -7,7 +7,7 @@
 import { createMaterialBottomTabNavigator } from '@react-navigation/material-bottom-tabs';
 import { FontAwesome, MaterialCommunityIcons } from '@expo/vector-icons';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { NavigationContainer, DefaultTheme, DarkTheme } from '@react-navigation/native';
+import { NavigationContainer, DefaultTheme, DarkTheme, RouteProp } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import * as React from 'react';
 import { ColorSchemeName, Pressable } from 'react-native';
@@ -23,6 +23,9 @@ import { RootStackParamList, RootTabParamList, RootTabScreenProps } from '../typ
 import LinkingConfiguration from './LinkingConfiguration';
 import MessagesScreen from '../screens/Messages/MessagesScreen';
 import SettingsScreen from '../screens/SettingsScreen';
+import SignInScreen from '../screens/SignInScreen';
+import { StackScreenProps } from '@react-navigation/stack';
+import { LinearGradient } from 'expo-linear-gradient';
 
 export default function Navigation({ colorScheme }: { colorScheme: ColorSchemeName }) {
   return (
@@ -40,17 +43,65 @@ export default function Navigation({ colorScheme }: { colorScheme: ColorSchemeNa
  */
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
-function RootNavigator() {
-  return (
-    <Stack.Navigator>
-      <Stack.Screen name="Root" component={MaterialBottomTabsScreen} options={{ headerShown: true }} />
-      <Stack.Screen name="NotFound" component={NotFoundScreen} options={{ title: 'Oops!' }} />
-      <Stack.Group screenOptions={{ presentation: 'modal' }}>
-        <Stack.Screen name="Modal" component={ModalScreen} />
-      </Stack.Group>
-    </Stack.Navigator>
-  );
+// function getHeaderTitle(route: RouteProp<RootStackParamList>): string {
+//   console.log(route.key, route.name, route.params, route.path, route["state"]);
+
+//   return "test";
+// }
+
+let routeChange: (index: number) => void;
+
+interface State {
+  routeIndex: number;
 }
+
+const headerTitles = [
+  "Today", "Calendar", "Messages", "Settings"
+];
+
+class RootNavigator extends React.Component<{}, State> {
+  constructor(props: Readonly<{}>) {
+    super(props);
+
+    this.state = {
+      routeIndex: 0,
+    };
+  }
+
+  componentDidMount() {
+    routeChange = (index: number) => {
+      this.setState({ routeIndex: index });
+    }
+  }
+
+  render() {
+    return (
+      <Stack.Navigator>
+        <Stack.Screen name="SignIn" component={SignInScreen} options={{ headerShown: false }} />
+        <Stack.Screen name="Root" component={MaterialBottomTabsScreen} options={({ route }) => ({
+          headerShown: true,
+          title: headerTitles[this.state.routeIndex],
+          headerBackground: () => <LinearGradient
+            start={{ x: 0, y: 0 }}
+            end={{ x: 0.8, y: 1 }}
+            colors={[Colors.rosemarkPurple, Colors.rosemarkPurpleMedium, Colors.rosemarkPurpleDark]}
+            // colors={['#4c669f', '#3b5998', '#192f6a']}
+            style={{
+              flex: 1
+              // flex: 1, borderBottomWidth: 1, borderBottomColor: '#aaa'
+            }}
+          />
+        })} />
+        <Stack.Screen name="NotFound" component={NotFoundScreen} options={{ title: 'Oops!' }} />
+        <Stack.Group screenOptions={{ presentation: 'modal' }}>
+          <Stack.Screen name="Modal" component={ModalScreen} />
+        </Stack.Group>
+      </Stack.Navigator>
+    );
+  }
+
+}
+
 
 /**
  * A bottom tab navigator displays tab buttons on the bottom of the display to switch screens.
@@ -67,17 +118,37 @@ type MaterialBottomTabParams = {
 const MaterialBottomTabs =
   createMaterialBottomTabNavigator<MaterialBottomTabParams>();
 
-function MaterialBottomTabsScreen() {
-  return (
-    <MaterialBottomTabs.Navigator barStyle={styles.tabBar}>
+class MaterialBottomTabsScreen extends React.Component<StackScreenProps<MaterialBottomTabParams>, {}> {
+  // componentDidMount() {
+
+  //   const unsubscribe = this.props.navigation.addListener('tabPress', (e) => {
+  //     // Prevent default behavior
+
+  //     console.log("tab press0");
+  //   });
+  // }
+
+  render() {
+    return <MaterialBottomTabs.Navigator barStyle={styles.tabBar} screenOptions={{
+      title: "test",
+      tabBarColor: Colors.rosemarkPurpleDark,
+    }}
+      activeColor={"white"}
+      inactiveColor='white'
+    >
       <MaterialBottomTabs.Screen
         name="TabStack"
         options={{
           tabBarLabel: 'Today',
           tabBarIcon: 'home',
-          tabBarColor: '#C9E7F8',
+          // tabBarColor: Colors.rosemarkPurple,
         }}
         component={HomeScreen}
+        listeners={({ navigation, route }) => ({
+          tabPress: e => {
+            routeChange(0);
+          },
+        })}
       />
       <MaterialBottomTabs.Screen
         name="TabChat"
@@ -85,18 +156,28 @@ function MaterialBottomTabsScreen() {
         options={{
           tabBarLabel: 'Calendar',
           tabBarIcon: 'calendar',
-          tabBarColor: '#9FD5C9',
+          // tabBarColor: Colors.rosemarkPurpleMedium,
         }}
-        />
+        listeners={({ navigation, route }) => ({
+          tabPress: e => {
+            routeChange(1);
+          },
+        })}
+      />
       <MaterialBottomTabs.Screen
         name="TabContacts"
         component={MessagesScreen}
         options={{
           tabBarLabel: 'Messages',
           tabBarIcon: 'format-list-bulleted',
-          tabBarColor: '#F7EAA2',
+          // tabBarColor: Colors.rosemarkPurpleDark,
           tabBarBadge: true,
         }}
+        listeners={({ navigation, route }) => ({
+          tabPress: e => {
+            routeChange(2);
+          },
+        })}
       />
       <MaterialBottomTabs.Screen
         name="TabAlbums"
@@ -104,12 +185,68 @@ function MaterialBottomTabsScreen() {
         options={{
           tabBarLabel: 'Settings',
           tabBarIcon: 'account-cog',
-          tabBarColor: '#FAD4D6',
+          // tabBarColor: Colors.rosemarkPurpleDark,
         }}
+        listeners={({ navigation, route }) => ({
+          tabPress: e => {
+            routeChange(3);
+          },
+        })}
       />
     </MaterialBottomTabs.Navigator>
-  );
+  }
 }
+// const unsubscribe = this.props.navigation.addListener('tabPress', (e) => {
+//   // Prevent default behavior
+
+//   console.log("tab press0");
+// });
+// console.log("load");
+// function MaterialBottomTabsScreen() {
+//   return (
+//     <MaterialBottomTabs.Navigator barStyle={styles.tabBar} screenOptions={{
+//       title: "test"
+//     }}>
+//       <MaterialBottomTabs.Screen
+//         name="TabStack"
+//         options={{
+//           tabBarLabel: 'Today',
+//           tabBarIcon: 'home',
+//           tabBarColor: '#C9E7F8',
+//         }}
+//         component={HomeScreen}
+//       />
+//       <MaterialBottomTabs.Screen
+//         name="TabChat"
+//         component={CalendarScreen}
+//         options={{
+//           tabBarLabel: 'Calendar',
+//           tabBarIcon: 'calendar',
+//           tabBarColor: '#9FD5C9',
+//         }}
+//       />
+//       <MaterialBottomTabs.Screen
+//         name="TabContacts"
+//         component={MessagesScreen}
+//         options={{
+//           tabBarLabel: 'Messages',
+//           tabBarIcon: 'format-list-bulleted',
+//           tabBarColor: '#F7EAA2',
+//           tabBarBadge: true,
+//         }}
+//       />
+//       <MaterialBottomTabs.Screen
+//         name="TabAlbums"
+//         component={SettingsScreen}
+//         options={{
+//           tabBarLabel: 'Settings',
+//           tabBarIcon: 'account-cog',
+//           tabBarColor: '#FAD4D6',
+//         }}
+//       />
+//     </MaterialBottomTabs.Navigator>
+//   );
+// }
 
 const styles = StyleSheet.create({
   tabBar: {

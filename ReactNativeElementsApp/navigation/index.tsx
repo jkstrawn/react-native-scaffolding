@@ -8,7 +8,7 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { NavigationContainer, DefaultTheme, DarkTheme, NavigationProp, ParamListBase, StackActionHelpers, StackNavigationState } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import * as React from 'react';
-import { Animated, ColorSchemeName, Pressable, StyleSheet } from 'react-native';
+import { Animated, ColorSchemeName, Pressable, RegisteredStyle, StyleSheet, ViewStyle } from 'react-native';
 import { View, Text } from '../components/Themed';
 
 import Colors from '../constants/Colors';
@@ -76,29 +76,27 @@ function BottomTabNavigator() {
   return (
     <Tab.Navigator
       screenOptions={{
-        // tabBarActiveTintColor: '#373737',
-        // tabBarActiveBackgroundColor: '#272727',
-        // tabBarActiveTintColor: '#547385',
-        // tabBarActiveBackgroundColor: '#30444f',
-        tabBarActiveTintColor: Colors.rosemarkPurple,
-        tabBarActiveBackgroundColor: '#66174c',
+        tabBarActiveTintColor: '#373737',
+        tabBarActiveBackgroundColor: '#272727',
+        // tabBarActiveTintColor: '#3b525e',
+        // tabBarActiveBackgroundColor: '#24333b',
+        // tabBarActiveTintColor: Colors.rosemarkPurpleMedium,
+        // tabBarActiveBackgroundColor: Colors.rosemarkPurpleDark,
         tabBarInactiveTintColor: 'white',
         tabBarInactiveBackgroundColor: 'white',
         tabBarShowLabel: true,
         headerShown: true,
         headerStyle: { backgroundColor: Colors.rosemarkPurple, borderBottomWidth: 2, borderBottomColor: '#222' },
-        headerBackground: () => <LinearGradient
-          // Button Linear Gradient
-          colors={['#4c669f', '#3b5998', '#192f6a']}
+        headerBackground: ({ style }) => <LinearGradient
+          start={{ x: 0, y: 0 }}
+          end={{ x: 0.8, y: 1 }}
+          colors={[Colors.rosemarkPurple, Colors.rosemarkPurpleMedium, Colors.rosemarkPurpleDark]}
+          // colors={['#4c669f', '#3b5998', '#192f6a']}
           style={{
-            position: 'absolute',
-            left: 0,
-            right: 0,
-            top: 0,
-            height: 300,
+            flex: 1
+            // flex: 1, borderBottomWidth: 1, borderBottomColor: '#aaa'
           }}
         />
-        // header: () => <View></View>
       }}
       tabBar={(props) => (
         <BottomFabBar
